@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animasi Love, Bunga & Daun Gugur</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            touch-action: manipulation;
+            position: relative;
+        }
+        
+        /* Background dengan overlay gradient */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+       .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 25%; /* <-- Ubah nilai ini */
+            opacity: 0.5;
+            animation: bgZoom 10s infinite alternate;
+        }
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255,204,255,0.7) 0%, rgba(255,153,204,0.7) 100%);
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .input-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 25px rgba(255, 102, 204, 0.6);
+            text-align: center;
+            z-index: 2000;
+            border: 2px solid #ffb3e6;
+        }
+        
+        .input-container h2 {
+            color: #ff0066;
+            margin-bottom: 20px;
+        }
+        
+        .input-container input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #ff99cc;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .input-container input:focus {
+            border-color: #ff0066;
+        }
+        
+        .input-container button {
+            background-color: #ff0066;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .input-container button:hover {
+            background-color: #ff3385;
+        }
+        
+        .love {
+            position: absolute;
+            color: #ff3366;
+            font-size: 20px;
+            animation: float-up 4s linear forwards;
+            user-select: none;
+            z-index: 10;
+        }
+        
+        .flower {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: fountain 5s linear forwards;
+            z-index: 10;
+        }
+        
+        .petal {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #ff66b3;
+            animation: petal-float 6s linear forwards;
+        }
+        
+        .leaf {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: #66cc66;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            animation: leaf-fall 8s linear forwards;
+            transform-origin: top center;
+            z-index: 10;
+        }
+        
+        .message {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #ff0066;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px white;
+            z-index: 100;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        
+        .typing-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 102, 204, 0.6);
+            font-size: 16px;
+            line-height: 1.5;
+            color: #d23369;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+            z-index: 1000;
+            border: 2px solid #ffb3e6;
+            box-sizing: border-box;
+            display: none;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 18px;
+            background-color: #ff0066;
+            animation: blink 0.7s infinite;
+            margin-left: 3px;
+        }
+        
+        .sticker {
+            position: absolute;
+            font-size: 24px;
+            animation: sticker-float 4s linear forwards;
+            z-index: 2000;
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        @keyframes float-up {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes fountain {
+            0% { transform: translateY(0) scale(0.5); opacity: 1; }
+            50% { transform: translateY(-50vh) scale(1.2); }
+            100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+        }
+        
+        @keyframes petal-float {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(random(100) - 50px, -100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes leaf-fall {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(random(200) - 100px, 100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        @keyframes sticker-float {
+            0% { transform: translateY(0) rotate(0deg) scale(0.5); opacity: 0; }
+            20% { opacity: 1; transform: translateY(-20px) rotate(-10deg) scale(1); }
+            80% { opacity: 1; }
+            100% { transform: translateY(-80px) rotate(10deg) scale(0.8); opacity: 0; }
+        }
+        
+        @keyframes bgZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+        
+        .sticker-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+        }
+        
+        @media (min-width: 768px) {
+            .typing-text { font-size: 18px; padding: 30px; }
+            .message { font-size: 24px; }
+            .sticker { font-size: 30px; }
+            .cursor { height: 22px; }
+        }
+        
+        @media (max-width: 480px) {
+            .input-container { padding: 20px; }
+            .typing-text { font-size: 14px; padding: 15px; line-height: 1.4; }
+            .message { font-size: 16px; bottom: 10px; }
+            .sticker { font-size: 20px; }
+            .cursor { height: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <img class="bg-image" src="img/foto bg.jpeg" alt="Background">
+        <div class="bg-overlay"></div>
+    </div>
+    
+    <div class="container" id="container">
+        <div class="input-container" id="inputContainer">
+            <h2>Masukkan Nama Kamu</h2>
+            <input type="text" id="usernameInput" placeholder="Nama kamu...">
+            <button id="submitBtn">Kirim</button>
+        </div>
+        
+        <div class="sticker-container" id="stickerContainer"></div>
+        <div class="typing-text" id="typingText"></div>
+        <div class="message">sentuh di mana saja untuk lebih banyak bunga !</div>
+    </div>
+
+    <script>
+        const container = document.getElementById('container');
+        const inputContainer = document.getElementById('inputContainer');
+        const usernameInput = document.getElementById('usernameInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const typingText = document.getElementById('typingText');
+        const stickerContainer = document.getElementById('stickerContainer');
+        
+        const colors = ['#ff3366', '#ff0066', '#ff6699', '#ff1493', '#ff00ff'];
+        const flowerColors = ['#ff66b3', '#ff99cc', '#ffb3e6', '#ffccff', '#ff66ff'];
+        const stickers = ['🌸', '🌹', '💮', '🏵️', '🌺', '🌻', '🌼', '🌷', '💐', '🥀', '❤️', '🧡', '💛', '💚', '💙', '💜'];
+        
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const loveInterval = isMobile ? 300 : 200;
+        const flowerInterval = isMobile ? 400 : 300;
+        const leafInterval = isMobile ? 600 : 500;
+        const stickerInterval = isMobile ? 1000 : 800;
+        
+        submitBtn.addEventListener('click', handleSubmit);
+        usernameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSubmit();
+            }
+        });
+        
+        function handleSubmit() {
+            const username = usernameInput.value.trim();
+
+            // Cek jika username yang dimasukkan BUKAN "mamas" (tidak peduli huruf besar/kecil)
+            if (username.toLowerCase() !== 'mamas') {
+                alert('Username salah. Hanya "mamas" yang diizinkan masuk.');
+                return; // Menghentikan fungsi jika username salah
+            }
+
+            // --- Kode di bawah ini hanya akan berjalan jika username adalah "mamas" ---
+        
+            // Sembunyikan form input
+            inputContainer.style.display = 'none';
+        
+            // Buat pesan personal
+            const message = `Hai ${username}, Selamat hari National Girlfriend Day—jadi aku cuma mau bilang, senang bisa kenal kamu dan semoga kamu selalu bahagia dalam setiap langkah ✨. Hari ini katanya hari untuk menghargai perempuan hebat. Jadi ya... aku langsung kepikiran kamu. Nggak tahu kenapa, tapi ya gitu 😊🌼💐`;
+        
+            // Tampilkan kotak teks untuk animasi mengetik
+            typingText.style.display = 'block';
+        
+            // Mulai semua animasi latar belakang
+            startAnimations();
+        
+            // Mulai efek animasi mengetik
+            setTimeout(() => {
+                typeWriter(message, typingText, isMobile ? 60 : 50);
+            }, 500);
+        }
+        
+        function typeWriter(text, element, speed) {
+            let i = 0;
+            element.innerHTML = '';
+            
+            function typing() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typing, speed);
+                    
+                    if (i % 10 === 0) {
+                        createStickerAboveText(element);
+                    }
+                } else {
+                    element.innerHTML += '<span class="cursor"></span>';
+                    
+                    for (let j = 0; j < (isMobile ? 10 : 15); j++) {
+                        setTimeout(() => {
+                            createStickerAboveText(element);
+                        }, j * 200);
+                    }
+                }
+            }
+            typing();
+        }
+        
+        function createStickerAboveText(textElement) {
+            const textRect = textElement.getBoundingClientRect();
+            const sticker = document.createElement('div');
+            sticker.className = 'sticker';
+            sticker.innerHTML = stickers[Math.floor(Math.random() * stickers.length)];
+            
+            const left = textRect.left + (Math.random() * textRect.width);
+            const top = textRect.top - 10;
+            
+            sticker.style.left = left + 'px';
+            sticker.style.top = top + 'px';
+            sticker.style.fontSize = (Math.random() * (isMobile ? 15 : 20) + (isMobile ? 15 : 20)) + 'px';
+            sticker.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            
+            stickerContainer.appendChild(sticker);
+            
+            setTimeout(() => {
+                sticker.remove();
+            }, 4000);
+        }
+        
+        function startAnimations() {
+            setInterval(createLove, loveInterval);
+            setInterval(createFlower, flowerInterval);
+            setInterval(createLeaf, leafInterval);
+            setInterval(createSticker, stickerInterval);
+            
+            container.addEventListener('click', handleInteraction);
+            container.addEventListener('touchstart', handleInteraction);
+        }
+        
+        function createLove() {
+            const love = document.createElement('div');
+            love.className = 'love';
+            love.innerHTML = '❤';
+            love.style.left = Math.random() * 100 + 'vw';
+            love.style.top = '100vh';
+            love.style.fontSize = (Math.random() * (isMobile ? 15 : 20) + 10) + 'px';
+            love.style.color = colors[Math.floor(Math.random() * colors.length)];
+            love.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            container.appendChild(love);
+            
+            setTimeout(() => {
+                love.remove();
+            }, 4000);
+        }
+        
+        function createFlower() {
+            const flower = document.createElement('div');
+            flower.className = 'flower';
+            flower.style.left = Math.random() * 100 + 'vw';
+            flower.style.top = '100vh';
+            flower.style.backgroundColor = flowerColors[Math.floor(Math.random() * flowerColors.length)];
+            flower.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            container.appendChild(flower);
+            
+            const petalCount = isMobile ? 3 : 5;
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.style.left = (Math.random() * 20 - 10) + 'px';
+                petal.style.top = (Math.random() * 20 - 10) + 'px';
+                petal.style.backgroundColor = flowerColors[Math.floor(Math.random() * flowerColors.length)];
+                petal.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                flower.appendChild(petal);
+            }
+            
+            setTimeout(() => {
+                flower.remove();
+            }, 5000);
+        }
+        
+        function createLeaf() {
+            const leaf = document.createElement('div');
+            leaf.className = 'leaf';
+            leaf.style.left = Math.random() * 100 + 'vw';
+            leaf.style.top = '-20px';
+            leaf.style.transform = `rotate(${Math.random() * 360}deg)`;
+            leaf.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            container.appendChild(leaf);
+            
+            setTimeout(() => {
+                leaf.remove();
+            }, 8000);
+        }
+        
+        function createSticker() {
+            const sticker = document.createElement('div');
+            sticker.className = 'sticker';
+            sticker.innerHTML = stickers[Math.floor(Math.random() * stickers.length)];
+            sticker.style.left = Math.random() * 100 + 'vw';
+            sticker.style.top = '100vh';
+            sticker.style.fontSize = (Math.random() * (isMobile ? 15 : 20) + (isMobile ? 15 : 20)) + 'px';
+            sticker.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            stickerContainer.appendChild(sticker);
+            
+            setTimeout(() => {
+                sticker.remove();
+            }, 4000);
+        }
+        
+        function handleInteraction(e) {
+            if (e.type === 'touchstart') {
+                e.preventDefault();
+            }
+            
+            const count = isMobile ? 5 : 10;
+            for (let i = 0; i < count; i++) {
+                createLove();
+                createFlower();
+                createSticker();
+            }
+        }
+    </script>
+</body>
+</html>
